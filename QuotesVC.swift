@@ -81,13 +81,13 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
                     (returnedObjects, returnedError) -> Void in
                     if returnedError == nil
                     {
-                        println("on the local data store query we found: \(returnedObjects)")
+                        //println("on the local data store query we found: \(returnedObjects)")
                         if let usersArray = returnedObjects as? [PassiveUser]
                         {
                             for foundUser in usersArray
                             {
                                 self.theCurrentUser = foundUser
-                                println("user successfully logged as current user")
+                                //println("user successfully logged as current user")
                             }
                         }
                     }
@@ -365,7 +365,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     }
     func theUserDoubleTapped(yes: Bool, forCell: QuoteCell, andQuote: Quote)
     {
-        println("double tap here")
+        //println("double tap here")
         UIView.animateWithDuration(0.5, animations: { () -> Void in
             forCell.clapImage.alpha = 1.0
         }) { (finished) -> Void in
@@ -399,7 +399,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
                     { (success, error) -> Void in
                         if error == nil
                         {
-                            println("quote was saved, was the countersaved?")
+                            //println("quote was saved, was the countersaved?")
                         }
                 }
 
@@ -425,7 +425,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     {
         self.selectedQuote = withQuote
         let myLikesHere = withQuote.upvotes
-        println(myLikesHere)
+        //println(myLikesHere)
 
     }
 //unwind segue for sign out

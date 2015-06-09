@@ -40,10 +40,10 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
             if error == nil
             {
                 self.likes = returnedLikers as! [Upvote]
-                println(self.likes)
+                //println(self.likes)
                 for like in self.likes
                 {
-                    println(like.liker)
+                    //println(like.liker)
                 }
                 self.tableView.reloadData()
             }
@@ -151,7 +151,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
                 (succeeded, error) -> Void in
                 if error == nil
                 {
-                    println("follow saved")
+                    //println("follow saved")
                     self.usersFollows.append(newFollow)
                     self.usersFollowsPeople.append(newFollow.to)
                     self.tableView.reloadData()
@@ -164,7 +164,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         if contains(self.usersFollowsPeople, to)
         {
-            println("yes we have this users follow person")
+            //println("yes we have this users follow person")
             //for every follow in usersFollows where the to matches this to here, delete
             for follow in self.usersFollows
             {
@@ -178,7 +178,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
                     follow.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
-                            println("we deleted this son of a bitch")
+                            //println("we deleted this guy")
                             self.tableView.reloadData()
                         }
                     })
@@ -214,7 +214,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
                         {
                             self.usersFollowsPeople.append(follow.to)
                         }
-                        println("here is everyone I follow \(self.usersFollowsPeople)")
+                        //println("here is everyone I follow \(self.usersFollowsPeople)")
                         self.tableView.reloadData()
 
                     }

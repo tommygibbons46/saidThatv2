@@ -69,7 +69,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     {
         if self.selectedUser == self.theCurrentUser
         {
-            println("looking at your own profile")
+            //println("looking at your own profile")
             self.profilePic.userInteractionEnabled = true
             self.followButton.hidden = true
             //add gesture recognizer
@@ -82,13 +82,13 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
         }
         if self.selectedUser?.profilePic == nil
         {
-            println("setting up profile bubble")
+            //println("setting up profile bubble")
             setUpProfilePicture(UIImage(named:"profileBubble")!)
             profilePic.contentMode = UIViewContentMode.Center
         }
         else
         {
-            println("setting up profile image")
+            //println("setting up profile image")
             profilePic.contentMode = UIViewContentMode.ScaleAspectFit
             self.selectedUser?.profilePic.getDataInBackgroundWithBlock({ (imageData, error) -> Void in
                 if error == nil
@@ -131,7 +131,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.quoteToDelete?.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
-                            println("we deleted this quote")
+                            //println("we deleted this quote")
                             self.quotes.removeAtIndex(indexPath.row)
                             self.tableView.reloadData()
                         }
@@ -143,7 +143,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.quoteToDelete?.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
-                            println("we deleted this quote")
+                            //println("we deleted this quote")
                             self.posts.removeAtIndex(indexPath.row)
                             self.tableView.reloadData()
                         }
@@ -169,7 +169,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.showRideAlert(quoteToMark)
                 }
                 self.quoteToDelete?.deleteInBackgroundWithBlock({ (success, error) -> Void in
-                    println("we deleted this quote")
+                    //println("we deleted this quote")
                 })
             
             })
@@ -195,7 +195,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 forQuote.saveInBackgroundWithBlock({ (success, error) -> Void in
                     if error == nil
                     {
-                        println("we have created a green quote")
+                        //println("we have created a green quote")
                         self.tableView.reloadData()
                     }
                 })
@@ -206,8 +206,8 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             forQuote.saveInBackgroundWithBlock({ (success, error) -> Void in
                 if error == nil
                 {
-                    println("we have created a green quote")
-                    println("jk no we didn't")
+                    //println("we have created a green quote")
+                    //println("jk no we didn't")
                 }
             })
         }))
@@ -275,7 +275,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     (succeeded, error) -> Void in
                     if error == nil
                     {
-                        println("follow saved")
+                        //println("follow saved")
                         self.followButton.setTitle("Unfollow", forState: UIControlState.Normal)
                         let newNumber = self.followers.count + 1
                         self.followersCountLabel.text = String(newNumber)
@@ -619,12 +619,12 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 if let results = objects as? [Follow]
                 {
                     self.following = results
-                    println(self.following)
-                    println(self.following.count)
+                    //println(self.following)
+                    //println(self.following.count)
                     for follow in self.following
                     {
-                        println(follow.to)
-                        println(follow.to.firstName)
+                        //println(follow.to)
+                        //println(follow.to.firstName)
                     }
                     self.followingCountLabel.text = String(self.following.count)
                     self.tableView.setNeedsLayout()
@@ -731,18 +731,18 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 (success, error) -> Void in
                 if (success)
                 {
-                    println("saved img file to user")
+                    //println("saved img file to user")
                 }
                 else
                 {
-                    println("no saved")
+                    //println("no saved")
                 }
         }
     }
     
     func changePhoto(sender: UITapGestureRecognizer)
     {
-        println("have a tap")
+        //println("have a tap")
         self.showAlertOnViewController()
     }
 
@@ -770,7 +770,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     }
     func theUserDoubleTapped(yes: Bool, forCell: QuoteCell, andQuote: Quote)
     {
-        println("double tap here")
+        //println("double tap here")
         UIView.animateWithDuration(0.5, animations: { () -> Void in
             forCell.clapImage2.alpha = 1.0
             }) { (finished) -> Void in
@@ -804,7 +804,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     { (success, error) -> Void in
                         if error == nil
                         {
-                            println("quote was saved, was the countersaved?")
+                            //println("quote was saved, was the countersaved?")
                         }
                 }
                 
@@ -888,7 +888,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 (succeeded, error) -> Void in
                 if error == nil
                 {
-                    println("follow saved")
+                    //println("follow saved")
                     self.theCurrentUsersFollowsTo.append(newFollow)
                     self.theCurrentUsersFollowsToUser.append(newFollow.to)//change these arrays
                     self.tableView.reloadData()
@@ -914,7 +914,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
         
         if contains(self.theCurrentUsersFollowsToUser, to)
         {
-            println("yes we have this users follow person")
+            //println("yes we have this users follow person")
             //for every follow in usersFollows where the to matches this to here, delete
             for follow in self.theCurrentUsersFollowsTo
             {
@@ -928,7 +928,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     follow.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
-                            println("we deleted this guy")
+                            //println("we deleted this guy")
                             if from == self.selectedUser //the current user is looking at his own profile and just unfollowed someone (presumably who was following him)
                             {
                                 //                              let int = self.followingCountLabel.text

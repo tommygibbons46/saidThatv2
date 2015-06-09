@@ -109,7 +109,7 @@ class LogInVC: UIViewController, UITextFieldDelegate
                 (returnedObjects, returnedError) -> Void in
                 if returnedError == nil
                 {
-                    println("we found: \(returnedObjects)")
+                    //println("we found: \(returnedObjects)")
                     if let usersArray = returnedObjects as? [PassiveUser]
                     {
                         for foundUser in usersArray
@@ -126,17 +126,17 @@ class LogInVC: UIViewController, UITextFieldDelegate
                     }
                     else
                     {
-                        println("won't let us in!")
+                        //println("won't let us in!")
 //                        but let's try to break through anyway
                         
                     }
                     if returnedObjects?.count > 0
                     {
-                        println("we found: \(returnedObjects)")
+                        //println("we found: \(returnedObjects)")
                     }
                     else
                     {
-                        println("there was an error: \(returnedError)")
+                        //println("there was an error: \(returnedError)")
                         let newQuery = PassiveUser.query()
                         newQuery?.whereKey("phoneNumber", equalTo: self.formattedPhoneNumber!)
                         newQuery?.findObjectsInBackgroundWithBlock({ (results, error) -> Void in
@@ -144,7 +144,7 @@ class LogInVC: UIViewController, UITextFieldDelegate
                             {
                                 if results!.count > 0
                                 {
-                                    println(self.formattedPhoneNumber)
+                                    //println(self.formattedPhoneNumber)
                                     self.showAlert("...we recognize that number though...if you forgot your password, you can reset it by signing up again with the same phone number")
                                     self.passwordTextField.text = ""
                                 }

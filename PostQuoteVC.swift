@@ -100,8 +100,8 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
                 {
                     if returnedObjects!.count > 0
                     {
-                        println("user is already active")
-                        println(returnedObjects)
+                        //println("user is already active")
+                        //println(returnedObjects)
                         if let objects = returnedObjects as? [PassiveUser]
                         {
                             for foundUser in objects
@@ -128,7 +128,7 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
     
     @IBAction func profButtonHit(sender: AnyObject)
         {
-            println("prof button tap")
+            //println("prof button tap")
         }
     @IBAction func quoteItHereTap(sender: AnyObject)
     {
@@ -301,7 +301,7 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
                 (success: Bool, error: NSError?) -> Void in
                 if success
                 {
-                    println("New Passive User has been saved.")
+                    //println("New Passive User has been saved.")
                     self.checkButton.hidden = true
                     self.personName.hidden = false
                     self.nameString = NSString(format: "%@ %@", quotedUser.firstName, quotedUser.lastName) as String
@@ -329,7 +329,7 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
                 (success: Bool, error: NSError?) -> Void in
                 if success
                 {
-                    println("saved user and quote")
+                    //println("saved user and quote")
                     self.navigationController?.popViewControllerAnimated(true)
                     self.sendText()
                 }
@@ -348,7 +348,7 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
                 {
                     if returnedObjects!.count > 0
                     {
-                        println("this user exists")
+                        //println("this user exists")
                         if let objects = returnedObjects as? [PassiveUser]
                         {
                             for foundUser in objects
@@ -382,7 +382,7 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
                     (success, error) -> Void in
                     if error == nil
                     {
-                        println("sent a text to that number")
+                        //println("sent a text to that number")
                     }
                 
 

@@ -83,7 +83,7 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     
     @IBAction func flagButton2tap(sender: AnyObject)
     {
-        println("flag tapped")
+        //println("flag tapped")
         delegate?.theUserHitFlagButton(true, forCell: selectedQuote!)
     }
     @IBAction func authorButtonTap(sender: AnyObject)
@@ -111,7 +111,7 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     }
     @IBAction func flagButtonTap(sender: AnyObject)
     {
-        println("flag tapped")
+        //println("flag tapped")
         delegate?.theUserHitFlagButton(true, forCell: selectedQuote!)
     }
     
