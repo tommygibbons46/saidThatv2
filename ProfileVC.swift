@@ -325,6 +325,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             cell.clapImage2.alpha = 0.0
             let quoteToShow = self.quotes[indexPath.row]
             cell.qTextLabel2.text = "\"" + quoteToShow.quoteText + "\""
+            cell.qTextLabel2.font = cell.qTextLabel2.font.fontWithSize(14)
             cell.delegate = self
             cell.selectedQuote = quoteToShow
             let newNumber = quoteToShow.likesCounter.integerValue
@@ -362,6 +363,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             let quoteToShow = self.posts[indexPath.row]
             cell.selectedQuote = quoteToShow
             cell.qTextLabel2.text = "\"" + quoteToShow.quoteText + "\""
+            cell.qTextLabel2.font = cell.qTextLabel2.font.fontWithSize(14)
             cell.delegate = self
             let newNumber = quoteToShow.likesCounter.integerValue
             let numberString = String(stringInterpolationSegment: newNumber)
@@ -437,6 +439,10 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             {
                 cell.followButton2.hidden = true
             }
+            else
+            {
+                cell.followButton2.hidden = false
+            }
             if contains(self.theCurrentUsersFollowsToUser, userForRow)
             {
                 cell.isFollowing2 = true
@@ -472,6 +478,10 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             if cell.theCurrentUser == followeeObject.to
             {
                 cell.followButton2.hidden = true
+            }
+            else
+            {
+                cell.followButton2.hidden = false
             }
             let userForRow = followeeObject.to
             

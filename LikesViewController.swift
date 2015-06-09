@@ -102,6 +102,10 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
         {
             cell.followButton.hidden = true
         }
+        else
+        {
+            cell.followButton.hidden = false
+        }
         let string = upvote.liker.firstName + " " + upvote.liker.lastName
         if contains(self.usersFollowsPeople, upvote.liker)
         {

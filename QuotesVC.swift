@@ -16,6 +16,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     var theCurrentUser : PassiveUser?
     var userToDelete: PFObject?
     var refreshControl = UIRefreshControl()
+    var phoneNumber: AnyObject?
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     
@@ -35,7 +36,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents:UIControlEvents.ValueChanged)
         self.tableView.addSubview(refreshControl)
         self.tableView.separatorColor = UIColor.lightGrayColor()
-        self.queryLocalDataStore()
+//        self.queryLocalDataStore()
 
 
 
@@ -65,42 +66,36 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     
     func queryLocalDataStore()
     {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        let verified: AnyObject? =  defaults.objectForKey("verified")
-        let phoneNumber: AnyObject? = defaults.objectForKey("phoneNumber")
-        if verified == nil
-        {
-            self.performSegueWithIdentifier("sendToLogin", sender: self)
-        }
-        else
-        {
-            let logInQuery = PassiveUser.query()
-            logInQuery!.whereKey("phoneNumber", equalTo: phoneNumber!)
-            logInQuery!.findObjectsInBackgroundWithBlock
+//        println("try to query our way in")
+        let logInQuery = PassiveUser.query()
+        logInQuery!.whereKey("phoneNumber", equalTo: phoneNumber!)
+        logInQuery!.findObjectsInBackgroundWithBlock
+            {
+                (returnedObjects, returnedError) -> Void in
+                if returnedError == nil
                 {
-                    (returnedObjects, returnedError) -> Void in
-                    if returnedError == nil
+                    
+                    if let usersArray = returnedObjects as? [PassiveUser]
                     {
-                        //println("on the local data store query we found: \(returnedObjects)")
-                        if let usersArray = returnedObjects as? [PassiveUser]
+                        for foundUser in usersArray
                         {
-                            for foundUser in usersArray
-                            {
-                                self.theCurrentUser = foundUser
-                                //println("user successfully logged as current user")
-                            }
+                            self.theCurrentUser = foundUser
+//                            println("user successfully logged as current user")
                         }
                     }
-            }
+                }
         }
     }
 
     override func viewDidAppear(animated: Bool)
     {
-        //query for locally saved user
-        if self.theCurrentUser == nil
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let verified: AnyObject? =  defaults.objectForKey("verified")
+        phoneNumber = defaults.objectForKey("phoneNumber")
+//        println(phoneNumber)
+        if verified == nil
         {
-            
+            self.performSegueWithIdentifier("sendToLogin", sender: self)
         }
         else
         {

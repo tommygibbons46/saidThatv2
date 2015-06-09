@@ -117,6 +117,7 @@ class LogInVC: UIViewController, UITextFieldDelegate
                             self.theCurrentUser = foundUser
                             let nextVC = QuotesVC(nibName: "QuotesVC", bundle: nil)
                             nextVC.theCurrentUser = foundUser
+                            println(nextVC.theCurrentUser)
                             let defaults = NSUserDefaults.standardUserDefaults()
                             defaults.setObject(self.theCurrentUser?.phoneNumber, forKey: "phoneNumber")
                             defaults.setBool(true, forKey: "verified")
@@ -126,7 +127,11 @@ class LogInVC: UIViewController, UITextFieldDelegate
                     }
                     else
                     {
-                        //println("won't let us in!")
+                        println("won't let us in!")
+                        let defaults = NSUserDefaults.standardUserDefaults()
+                        defaults.setObject(self.formattedPhoneNumber, forKey: "phoneNumber")
+                        defaults.setBool(true, forKey: "verified")
+                        self.dismissViewControllerAnimated(true, completion: nil)
 //                        but let's try to break through anyway
                         
                     }
