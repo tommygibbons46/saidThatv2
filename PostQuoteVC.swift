@@ -90,7 +90,8 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
         let query = PassiveUser.query()
         let phoneNumber = self.phoneNumberTextField.text
         let aString = phoneNumber.stringByReplacingOccurrencesOfString("+1", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-        let chars: [Character] = ["(", ")", "-", " ", "+"]
+        aString.stringByReplacingOccurrencesOfString(" ", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        let chars: [Character] = ["(", ")", "-", " ", ",", "+"]
         formattedString = aString.stripCharactersInSet(chars)
         query!.whereKey("phoneNumber", equalTo: formattedString!)
         query!.findObjectsInBackgroundWithBlock
@@ -176,24 +177,24 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
     
     func textFieldDidBeginEditing(textField: UITextField)
     {
-        if haveSeenContacts == false
-        {
+//        if haveSeenContacts == false
+//        {
             self.resignFirstResponder() // should make the keyboard not appear
             let picker = ABPeoplePickerNavigationController()
             picker.peoplePickerDelegate = self
             self.presentViewController(picker, animated: true, completion: nil)
-        }
-        else
-        {
-            if self.profileButton.hidden == false
-            {
-                self.checkButton.hidden = true
-            }
-            else
-            {
-                self.checkButton.hidden = false
-            }
-        }
+//  }
+//        else
+//        {
+//            if self.profileButton.hidden == false
+//            {
+//                self.checkButton.hidden = true
+//            }
+//            else
+//            {
+//                self.checkButton.hidden = false
+//            }
+//        }
     }
     
     func peoplePickerNavigationController(peoplePicker: ABPeoplePickerNavigationController!, didSelectPerson person: ABRecord!)
@@ -211,12 +212,16 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
             var phoneNumber = ABMultiValueCopyValueAtIndex(phoneNumbers, index).takeRetainedValue() as! String
             self.phoneNumberTextField.text = phoneNumber
             let firstNumber = first(phoneNumber)
+            println(phoneNumber)
             if firstNumber == "1"
             {
                 phoneNumber = dropFirst(phoneNumber)
+                println(phoneNumber)
             }
             let aString = phoneNumber.stringByReplacingOccurrencesOfString("+1", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-            let chars: [Character] = ["(", ")", "-", " ", "+"]
+            aString.stringByReplacingOccurrencesOfString(" ", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+            println(aString)
+            let chars: [Character] = ["(", ")", "-", " ", "," ,"+"]
             formattedString = aString.stripCharactersInSet(chars)
             doesThisUserExist(firstName, lastName: lastName, phoneNumber: formattedString!)
         }
@@ -348,6 +353,7 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
                 {
                     if returnedObjects!.count > 0
                     {
+                        self.isUserActive = true
                         //println("this user exists")
                         if let objects = returnedObjects as? [PassiveUser]
                         {
@@ -373,20 +379,34 @@ class PostQuoteVC: UIViewController, UITextViewDelegate, UITextFieldDelegate, AB
     
     func sendText()
     {
-        
-        let firstName = self.theCurrentUser!.firstName
-        let lastName = self.theCurrentUser!.lastName
-        
-        PFCloud.callFunctionInBackground("sendUserText", withParameters: ["phoneNumber":self.phoneNumberTextField.text, "firstName": firstName, "lastName": lastName, "text": self.quoteTextView.text],
-            block: {
+        if isUserActive == true
+        {
+            let pushQuery = PFInstallation.query()
+            pushQuery!.whereKey("deviceOwner", equalTo: userToSave)
+            let push = PFPush()
+            push.setQuery(pushQuery) // Set our Installation query
+            let message = "\(self.theCurrentUser!.firstName) \(self.theCurrentUser!.lastName) remembers when you saidThat"
+            push.setMessage(message)
+            push.sendPushInBackground()
+            println("push should be sent")
+        }
+        else
+        {
+            let firstName = self.theCurrentUser!.firstName
+            let lastName = self.theCurrentUser!.lastName
+            
+            PFCloud.callFunctionInBackground("sendUserText", withParameters: ["phoneNumber":self.phoneNumberTextField.text, "firstName": firstName, "lastName": lastName, "text": self.quoteTextView.text],
+                block: {
                     (success, error) -> Void in
                     if error == nil
                     {
                         //println("sent a text to that number")
                     }
-                
-
-        })
+                    
+                    
+            })
+        }
+     
     }
     
 

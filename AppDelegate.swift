@@ -72,6 +72,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 PFAnalytics.trackAppOpenedWithLaunchOptions(launchOptions)
             }
         }
+        let settings = UIUserNotificationSettings(forTypes: UIUserNotificationType.Badge | UIUserNotificationType.Alert | UIUserNotificationType.Sound, categories: nil)
+        UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+        println("should be here")
+        UIApplication.sharedApplication().registerForRemoteNotifications()
+
         if application.respondsToSelector("registerUserNotificationSettings:") {
             let userNotificationTypes = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound
             let settings = UIUserNotificationSettings(forTypes: userNotificationTypes, categories: nil)
@@ -81,7 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let types = UIRemoteNotificationType.Badge | UIRemoteNotificationType.Alert | UIRemoteNotificationType.Sound
             application.registerForRemoteNotificationTypes(types)
         }
-
+//        UIApplication.sharedApplication().applicationIconBadgeNumber = 0
+//        UIApplication.sharedApplication().cancelAllLocalNotifications()
         return true
     }
     
@@ -93,7 +99,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
         let installation = PFInstallation.currentInstallation()
         installation.setDeviceTokenFromData(deviceToken)
-        installation.saveInBackground()
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let verified: AnyObject? =  defaults.objectForKey("verified")
+        let phoneNumber = defaults.objectForKey("phoneNumber")
+        
+        
+        let logInQuery = PassiveUser.query()
+        if phoneNumber != nil
+        {
+            println(phoneNumber)
+            println("adding device")
+            logInQuery!.whereKey("phoneNumber", equalTo: phoneNumber!)
+            logInQuery!.findObjectsInBackgroundWithBlock
+                {
+                    (returnedObjects, returnedError) -> Void in
+                    if returnedError == nil
+                    {
+                        
+                        if let usersArray = returnedObjects as? [PassiveUser]
+                        {
+                            for foundUser in usersArray
+                            {
+                                installation["deviceOwner"] = foundUser
+                                installation.saveInBackground()
+                                
+                            }
+                        }
+                    }
+            }
+        }
+        
         
         PFPush.subscribeToChannelInBackground("", block: { (succeeded: Bool, error: NSError?) -> Void in
             if succeeded {
@@ -122,11 +157,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ///////////////////////////////////////////////////////////
     // Uncomment this method if you want to use Push Notifications with Background App Refresh
     ///////////////////////////////////////////////////////////
-    // func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
-    //     if application.applicationState == UIApplicationState.Inactive {
-    //         PFAnalytics.trackAppOpenedWithRemoteNotificationPayload(userInfo)
-    //     }
-    // }
+     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
+         if application.applicationState == UIApplicationState.Inactive {
+             PFAnalytics.trackAppOpenedWithRemoteNotificationPayload(userInfo)
+         }
+     }
 
     //--------------------------------------
     // MARK: Facebook SDK Integration

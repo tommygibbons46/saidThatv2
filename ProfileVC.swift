@@ -230,13 +230,25 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     func setUpLabels()
     {
         let postsTap = UITapGestureRecognizer(target: self, action: "showPosts:")
+        let postsTap2 = UITapGestureRecognizer(target: self, action: "showPosts:")
+        self.postsCountLabel.userInteractionEnabled = true
         self.postsLabel.addGestureRecognizer(postsTap)
+        self.postsCountLabel.addGestureRecognizer(postsTap2)
         let quotesTap = UITapGestureRecognizer(target: self, action: "showQuotes:")
+        let quotesTap2 = UITapGestureRecognizer(target: self, action: "showQuotes:")
+        self.quotesCountLabel.userInteractionEnabled = true
         self.quotesLabel.addGestureRecognizer(quotesTap)
+        self.quotesCountLabel.addGestureRecognizer(quotesTap2)
         let followersTap = UITapGestureRecognizer(target: self, action: "showFollowers:")
+        let followersTap2 = UITapGestureRecognizer(target: self, action: "showFollowers:")
+        self.followersCountLabel.userInteractionEnabled = true
         self.followersLabel.addGestureRecognizer(followersTap)
+        self.followersCountLabel.addGestureRecognizer(followersTap2)
         let followingTap = UITapGestureRecognizer(target: self, action: "showFollowing:")
+        let followingTap2 = UITapGestureRecognizer(target: self, action: "showFollowing:")
+        self.followingCountLabel.userInteractionEnabled = true
         self.followingLabel.addGestureRecognizer(followingTap)
+        self.followingCountLabel.addGestureRecognizer(followingTap2)
     }
     
     
@@ -295,6 +307,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     {
         let queryQuotes = Quote.query()
         queryQuotes!.whereKey("poster", equalTo: self.selectedUser!)
+        queryQuotes?.includeKey("saidBy")
 //        queryQuotes!.includeKey("upvotes")
         queryQuotes?.orderByDescending("likesCounter")
         queryQuotes!.findObjectsInBackgroundWithBlock(
@@ -310,6 +323,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.tableView.setNeedsLayout()
                     self.tableView.layoutIfNeeded()
                     self.tableView.reloadData()
+                    println(self.posts)
                 }
         })
 

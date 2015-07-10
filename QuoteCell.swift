@@ -79,11 +79,19 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     @IBAction func applaudButton2Tap(sender: AnyObject)
     {
         delegate?.createLike(selectedQuote!, forCell: self)
+        UIView.animateWithDuration(0.5, animations: { () -> Void in
+            self.clapImage2.alpha = 1.0
+            }) { (finished) -> Void in
+                UIView.animateWithDuration(0.5, animations: { () -> Void in
+                    self.clapImage2.alpha = 0.0
+                    }, completion: nil)
+        }
     }
     
     @IBAction func flagButton2tap(sender: AnyObject)
     {
         //println("flag tapped")
+
         delegate?.theUserHitFlagButton(true, forCell: selectedQuote!)
     }
     @IBAction func authorButtonTap(sender: AnyObject)
@@ -107,6 +115,13 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
 
     @IBAction func applauseTap(sender: AnyObject)
     {
+        UIView.animateWithDuration(0.5, animations: { () -> Void in
+            self.clapImage.alpha = 1.0
+            }) { (finished) -> Void in
+                UIView.animateWithDuration(0.5, animations: { () -> Void in
+                    self.clapImage.alpha = 0.0
+                    }, completion: nil)
+        }
         delegate?.createLike(selectedQuote!, forCell: self)
     }
     @IBAction func flagButtonTap(sender: AnyObject)

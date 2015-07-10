@@ -40,10 +40,8 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
             if error == nil
             {
                 self.likes = returnedLikers as! [Upvote]
-                //println(self.likes)
                 for like in self.likes
                 {
-                    //println(like.liker)
                 }
                 self.tableView.reloadData()
             }
@@ -218,7 +216,6 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
                         {
                             self.usersFollowsPeople.append(follow.to)
                         }
-                        //println("here is everyone I follow \(self.usersFollowsPeople)")
                         self.tableView.reloadData()
 
                     }

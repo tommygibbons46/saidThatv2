@@ -78,6 +78,8 @@ class LogInVC: UIViewController, UITextFieldDelegate
     {
         super.viewDidLoad()
         self.passwordTextField.secureTextEntry = true
+        println(self.phoneNumberTextField.frame)
+//        println(self.phoneNumberCloud.frame)
         numberToolbar.barStyle = UIBarStyle.Default
         numberToolbar.items=[
             UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.Bordered, target: self, action: "hoopla"),
@@ -117,7 +119,6 @@ class LogInVC: UIViewController, UITextFieldDelegate
                             self.theCurrentUser = foundUser
                             let nextVC = QuotesVC(nibName: "QuotesVC", bundle: nil)
                             nextVC.theCurrentUser = foundUser
-                            println(nextVC.theCurrentUser)
                             let defaults = NSUserDefaults.standardUserDefaults()
                             defaults.setObject(self.theCurrentUser?.phoneNumber, forKey: "phoneNumber")
                             defaults.setBool(true, forKey: "verified")
@@ -127,7 +128,6 @@ class LogInVC: UIViewController, UITextFieldDelegate
                     }
                     else
                     {
-                        println("won't let us in!")
                         let defaults = NSUserDefaults.standardUserDefaults()
                         defaults.setObject(self.formattedPhoneNumber, forKey: "phoneNumber")
                         defaults.setBool(true, forKey: "verified")
@@ -137,11 +137,9 @@ class LogInVC: UIViewController, UITextFieldDelegate
                     }
                     if returnedObjects?.count > 0
                     {
-                        //println("we found: \(returnedObjects)")
                     }
                     else
                     {
-                        //println("there was an error: \(returnedError)")
                         let newQuery = PassiveUser.query()
                         newQuery?.whereKey("phoneNumber", equalTo: self.formattedPhoneNumber!)
                         newQuery?.findObjectsInBackgroundWithBlock({ (results, error) -> Void in

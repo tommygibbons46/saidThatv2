@@ -66,7 +66,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     
     func queryLocalDataStore()
     {
-//        println("try to query our way in")
+        println("checking")
         let logInQuery = PassiveUser.query()
         logInQuery!.whereKey("phoneNumber", equalTo: phoneNumber!)
         logInQuery!.findObjectsInBackgroundWithBlock
@@ -80,7 +80,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
                         for foundUser in usersArray
                         {
                             self.theCurrentUser = foundUser
-//                            println("user successfully logged as current user")
+                            println("user successfully logged as current user")
                         }
                     }
                 }
@@ -91,6 +91,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     {
         let defaults = NSUserDefaults.standardUserDefaults()
         let verified: AnyObject? =  defaults.objectForKey("verified")
+        println("gothere")
         phoneNumber = defaults.objectForKey("phoneNumber")
 //        println(phoneNumber)
         if verified == nil
@@ -259,15 +260,18 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     {
         let queryForMyFriends = Follow.query()
         queryForMyFriends?.whereKey("from", equalTo: self.theCurrentUser!)
-        
+
         let queryForFriendsSpokes = PFQuery(className: "Quote")
         queryForFriendsSpokes.whereKey("saidBy", matchesKey: "to", inQuery: queryForMyFriends!)
+        
         
         let queryForFriendsPosts = PFQuery(className: "Quote")
         queryForFriendsPosts.whereKey("poster", matchesKey: "to", inQuery: queryForMyFriends!)
         
         let compoundQuery = PFQuery.orQueryWithSubqueries([queryForFriendsSpokes,queryForFriendsPosts])
         compoundQuery.orderByDescending("createdAt")
+        compoundQuery.includeKey("saidBy")
+        compoundQuery.includeKey("poster")
         compoundQuery.findObjectsInBackgroundWithBlock(
             {
                 (returnedQuotes, error) -> Void in
@@ -294,6 +298,8 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         queryMoreQuotes.whereKey("poster", equalTo: self.theCurrentUser!)
         var compoundQuery = PFQuery.orQueryWithSubqueries([queryQuotes,queryMoreQuotes])
         compoundQuery.orderByDescending("createdAt")
+        compoundQuery.includeKey("saidBy")
+        compoundQuery.includeKey("poster")
         compoundQuery.findObjectsInBackgroundWithBlock(
             {
                 (returnedQuotes, error) -> Void in
@@ -371,7 +377,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         
         self.createLike(andQuote, forCell: forCell)
     }
-   
+    
     
     func createLike(quoteToLike: Quote, forCell: QuoteCell)
     {
@@ -394,6 +400,17 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
                     { (success, error) -> Void in
                         if error == nil
                         {
+                            let pushQueryOne = PFInstallation.query()
+                            pushQueryOne!.whereKey("deviceOwner", equalTo: quoteToLike.saidBy)
+                            let pushQueryTwo = PFInstallation.query()
+                            pushQueryTwo?.whereKey("deviceOwner", equalTo: quoteToLike.poster)
+                            let compoundPushQuery = PFQuery.orQueryWithSubqueries([pushQueryOne!, pushQueryTwo!])
+                            let push = PFPush()
+                            push.setQuery(compoundPushQuery) // Set our Installation query
+                            let name = "\(self.theCurrentUser!.firstName) \(self.theCurrentUser!.lastName) applauds your saidThat"
+                            push.setMessage(name)
+                            push.sendPushInBackground()
+                            println("push should be sent")
                             //println("quote was saved, was the countersaved?")
                         }
                 }
