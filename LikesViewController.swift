@@ -33,6 +33,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func queryforlikers()
     {
+        
         let relation = self.quoteWithLikes?.relationForKey("upvotes")
         let query = relation?.query()
         query?.includeKey("liker")

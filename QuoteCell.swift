@@ -32,6 +32,7 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var posterButton: UIButton!
     
+    @IBOutlet weak var saidbyPicture: UIImageView!
     
     @IBOutlet weak var quoteDetails: UILabel!
     

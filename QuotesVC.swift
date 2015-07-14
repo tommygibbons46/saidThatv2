@@ -131,6 +131,29 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         let quoteToShow = self.quotes[indexPath.row]
         let quoteToShowText = quoteToShow.quoteText
         cell.qTextLabel.text = "\"" + quoteToShowText + "\""
+        cell.saidbyPicture.frame.size = CGSizeMake(40, 40)
+        
+        cell.saidbyPicture.layer.cornerRadius = cell.saidbyPicture.frame.height/2
+        cell.saidbyPicture.clipsToBounds = true
+        cell.saidbyPicture.backgroundColor = UIColor(red: 162/255, green: 221/255, blue: 150/255, alpha: 1.0)
+        if quoteToShow.saidBy.hasPhoto.isEqualToNumber(0)
+        {
+            cell.saidbyPicture.contentMode = UIViewContentMode.Center
+            cell.saidbyPicture.image = UIImage(named: "miniflatbubble")
+            
+        }
+        if quoteToShow.saidBy.hasPhoto.isEqualToNumber(1)
+        {
+            cell.saidbyPicture.contentMode = UIViewContentMode.ScaleAspectFit
+            quoteToShow.saidBy.profilePic.getDataInBackgroundWithBlock { (data, error) -> Void in
+                if error == nil
+                {
+                    
+                    cell.saidbyPicture.image = UIImage(data: data!)
+                }
+            }
+        }
+     
         if quoteToShow.likesCounter.integerValue < 5
         {
             cell.qTextLabel.font = cell.qTextLabel.font.fontWithSize(14)
@@ -157,9 +180,9 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         let lastNameString = quoteToShow.saidBy["lastName"] as! String
         let postFirstNameString = quoteToShow.poster["firstName"] as! String
         let postLastNameString = quoteToShow.poster["lastName"] as! String
-        let newString = NSString(format: "-%@ %@ posted by %@ %@  %@", firstNameString, lastNameString, postFirstNameString, postLastNameString, dateString)
+        let newString = NSString(format: "%@ %@ posted by %@ %@  %@", firstNameString, lastNameString, postFirstNameString, postLastNameString, dateString)
         cell.quoteDetails!.text = dateString as String
-        cell.authorButton.setTitle("-"+firstNameString + " " + lastNameString, forState: UIControlState.Normal)
+        cell.authorButton.setTitle(firstNameString + " " + lastNameString, forState: UIControlState.Normal)
         cell.posterButton.setTitle(postFirstNameString + " " + postLastNameString, forState: UIControlState.Normal)
     
         if cell.selectedQuote!.quoteIsRiding.isEqualToNumber(1)
@@ -381,6 +404,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     
     func createLike(quoteToLike: Quote, forCell: QuoteCell)
     {
+        
         let newNumber = quoteToLike.likesCounter.integerValue + 1
         forCell.likeButton.setTitle(String(newNumber), forState: UIControlState.Normal)
         let newUpvote = Upvote(className: "Upvote")
@@ -423,12 +447,15 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     
     func sendToPoster(forQuote: Quote)
     {
+        println("1 called")
         self.selectedQuote = forQuote
         self.performSegueWithIdentifier("posterProfile", sender: nil)
     }
     
     func sendToAuthor(forQuote: Quote)
     {
+        println("called")
+
         self.selectedQuote = forQuote
         self.performSegueWithIdentifier("profile", sender: nil)
     }
