@@ -12,7 +12,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
 {
     
     var quoteWithLikes : Quote?
-    var likes : [Upvote] = []
+    var likes : [Clap] = []
     var userToShow : PassiveUser?
     var theCurrentUser: PassiveUser?
     var usersFollows : [Follow] = []
@@ -34,16 +34,29 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
     func queryforlikers()
     {
         
-        let relation = self.quoteWithLikes?.relationForKey("upvotes")
-        let query = relation?.query()
-        query?.includeKey("liker")
-        query?.findObjectsInBackgroundWithBlock({ (returnedLikers, error) -> Void in
+        
+//        
+//        let relation = self.quoteWithLikes?.relationForKey("upvotes")
+//        let query = relation?.query()
+//        query?.includeKey("liker")
+//        query?.findObjectsInBackgroundWithBlock({ (returnedLikers, error) -> Void in
+//            if error == nil
+//            {
+//                self.likes = returnedLikers as! [Clap]
+//                for like in self.likes
+//                {
+//                }
+//                self.tableView.reloadData()
+//            }
+//        })
+//        
+        let clapQuery = Clap.query()
+        clapQuery?.whereKey("quoteClapped", equalTo: quoteWithLikes!)
+        clapQuery?.includeKey("clapper")
+        clapQuery?.findObjectsInBackgroundWithBlock({ (returnedLikers, error) -> Void in
             if error == nil
             {
-                self.likes = returnedLikers as! [Upvote]
-                for like in self.likes
-                {
-                }
+                self.likes = returnedLikers as! [Clap]
                 self.tableView.reloadData()
             }
         })
@@ -65,8 +78,8 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
             cell.followButton.backgroundColor = UIColor(red: 218/255, green: 172/255, blue: 226/255, alpha: 1.0)
         }
         cell.theCurrentUser = self.theCurrentUser
-        cell.selectedUser = upvote.liker
-        self.userToShow = upvote.liker
+        cell.selectedUser = upvote.clapper
+        self.userToShow = upvote.clapper
         cell.profileImage.contentMode = UIViewContentMode.Center
         if userToShow!.hasPhoto.isEqualToNumber(0)
         {
@@ -76,7 +89,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
         else
         {
             cell.profileImage.contentMode = UIViewContentMode.ScaleAspectFit
-                upvote.liker.profilePic.getDataInBackgroundWithBlock({ (data, error) -> Void in
+                upvote.clapper.profilePic.getDataInBackgroundWithBlock({ (data, error) -> Void in
                 if error == nil
                 {
                     let image = UIImage(data:data!)
@@ -97,7 +110,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
 //            })
 //        }
      
-        if cell.theCurrentUser == upvote.liker
+        if cell.theCurrentUser == upvote.clapper
         {
             cell.followButton.hidden = true
         }
@@ -105,8 +118,8 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
         {
             cell.followButton.hidden = false
         }
-        let string = upvote.liker.firstName + " " + upvote.liker.lastName
-        if contains(self.usersFollowsPeople, upvote.liker)
+        let string = upvote.clapper.firstName + " " + upvote.clapper.lastName
+        if contains(self.usersFollowsPeople, upvote.clapper)
         {
             cell.isFollowing = true
             cell.followButton.setTitle("Unfollow", forState: UIControlState.Normal)
@@ -155,11 +168,24 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
                 if error == nil
                 {
                     //println("follow saved")
+                    self.sendPush(to)
                     self.usersFollows.append(newFollow)
                     self.usersFollowsPeople.append(newFollow.to)
                     self.tableView.reloadData()
                 }
         }
+    }
+    
+    func sendPush(receiverOfNotification: PassiveUser)
+    {
+        let pusher = PFInstallation.query()
+        pusher!.whereKey("deviceOwner", equalTo: receiverOfNotification)
+        let push = PFPush()
+        push.setQuery(pusher) // Set our Installation query
+        let message = "\(self.theCurrentUser!.firstName) \(self.theCurrentUser!.lastName) is now following you"
+        push.setMessage(message)
+        push.sendPushInBackground()
+        println("push should be sent")
     }
     
     func deleteFollow(to: PassiveUser, from: PassiveUser)
@@ -177,7 +203,7 @@ class LikesViewController: UIViewController, UITableViewDataSource, UITableViewD
                     let i = find(self.usersFollows, follow)
                     self.usersFollows.removeAtIndex(i!)
                     let u = find(self.usersFollowsPeople, follow.to)
-                    self.usersFollowsPeople.removeAtIndex(i!)
+                    self.usersFollowsPeople.removeAtIndex(u!)
                     follow.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
