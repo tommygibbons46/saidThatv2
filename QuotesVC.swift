@@ -38,7 +38,6 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents:UIControlEvents.ValueChanged)
         self.tableView.addSubview(refreshControl)
         self.tableView.separatorColor = UIColor.lightGrayColor()
-//        self.queryLocalDataStore()
 
 
 
@@ -68,7 +67,6 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     
     func queryLocalDataStore()
     {
-        println("checking")
         let logInQuery = PassiveUser.query()
         logInQuery!.whereKey("phoneNumber", equalTo: phoneNumber!)
         logInQuery!.findObjectsInBackgroundWithBlock
@@ -94,9 +92,7 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     {
         let defaults = NSUserDefaults.standardUserDefaults()
         let verified: AnyObject? =  defaults.objectForKey("verified")
-        println("gothere")
         phoneNumber = defaults.objectForKey("phoneNumber")
-//        println(phoneNumber)
         if verified == nil
         {
             self.performSegueWithIdentifier("sendToLogin", sender: self)
@@ -135,6 +131,8 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         let quoteToShowText = quoteToShow.quoteText
         cell.qTextLabel.text = "\"" + quoteToShowText + "\""
         cell.saidbyPicture.frame.size = CGSizeMake(40, 40)
+        
+        
         //CHECKS IF CLAPPED
         
         if contains(self.quotesIClap, quoteToShow)
@@ -283,10 +281,6 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
         
     }
     
-    @IBAction func addButtonTap(sender: UIBarButtonItem)
-    {
-        
-    }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
@@ -428,7 +422,6 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
     }
     func theUserDoubleTapped(yes: Bool, forCell: QuoteCell, andQuote: Quote)
     {
-        //println("double tap here")
         UIView.animateWithDuration(0.5, animations: { () -> Void in
             forCell.clapImage.alpha = 1.0
         }) { (finished) -> Void in
@@ -488,122 +481,6 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
             }
         }
         
-        
-//        if quoteToLike.quoteIsClapped == 1
-//        {
-//            quoteToLike.quoteIsClapped = 0
-//            quoteToLike.saveInBackgroundWithBlock({ (success, error) -> Void in
-//                if success
-//                {
-//                    println("we unliked this")
-//                    forCell.applaudButton.setTitle("Applaud", forState: UIControlState.Normal)
-//                }
-//            })
-//        }
-//        else
-//        {
-//            forCell.applaudButton.setTitle("Unapplaud", forState: UIControlState.Normal)
-//            quoteToLike.quoteIsClapped = 1
-//            quoteToLike.saveInBackgroundWithBlock { (success, error) -> Void in
-//                if success
-//                {
-//                    println("we clapped this quote")
-//                    
-//                    //send the push 
-//                }
-//            }
-//        }
-     
-//        
-//        countClaps?.whereKey("quoteClapped", equalTo: quoteToLike)
-//        countClaps?.whereKey("clapper", equalTo: self.theCurrentUser!)
-//        countClaps?.findObjectsInBackgroundWithBlock({ (claps, error) -> Void in
-//            if error == nil
-//            {
-//                println(claps)
-//                if let clapsArray = claps as? [Clap]
-//                {
-//                    println(count(clapsArray))
-//                    for clap in clapsArray
-//                    {
-//                        println(clap)
-//                    }
-//                    
-//
-//                }
-        
-//                claps.deleteInBackgroundWithBlock(PFObject)
-            
-      
-//        Clap.deleteInBackgroundWithBlock(PFObject)
-//        let countClaps1 = Clap.query()
-//        countClaps1?.whereKey("quoteClapped", equalTo: quoteToLike)
-//        countClaps1?.findObjectsInBackgroundWithBlock({ (claps, error) -> Void in
-//            if error == nil
-//            {
-//                println(claps)
-//            }
-//        })
-//        
-//        
-//        let countClaps2 = Clap.query()
-//        countClaps2?.whereKey("quoteClapped", equalTo: quoteToLike)
-//        countClaps2?.findObjectsInBackgroundWithBlock({ (claps, error) -> Void in
-//            if error == nil
-//            {
-//                println(claps)
-//            }
-//        })
-//        let clap = Clap(className: "Clap")
-//        clap.quoteClapped = quoteToLike
-//        clap.clapper = self.theCurrentUser!
-//        clap.saveInBackgroundWithBlock
-//        { (success, error) -> Void in
-//            if success
-//            {
-//                println("created a clap")
-//
-//            }
-//        }
-        
-        
-//        let newNumber = quoteToLike.likesCounter.integerValue + 1
-//        forCell.likeButton.setTitle(String(newNumber), forState: UIControlState.Normal)
-//        let newUpvote = Upvote(className: "Upvote")
-//        newUpvote.quote = quoteToLike
-//        newUpvote.liker = self.theCurrentUser!
-//        var upVoteACL = PFACL()
-//        upVoteACL.setPublicWriteAccess(true)
-//        upVoteACL.setPublicReadAccess(true)
-//        newUpvote.ACL = upVoteACL
-//        newUpvote.saveInBackgroundWithBlock { (success, error) -> Void in
-//            if error == nil
-//            {
-//                let upVoteRelation = quoteToLike.relationForKey("upvotes")
-//                upVoteRelation.addObject(newUpvote)
-//                quoteToLike.incrementKey("likesCounter", byAmount: 1)
-//                quoteToLike.saveInBackgroundWithBlock
-//                    { (success, error) -> Void in
-//                        if error == nil
-//                        {
-//                            let pushQueryOne = PFInstallation.query()
-//                            pushQueryOne!.whereKey("deviceOwner", equalTo: quoteToLike.saidBy)
-//                            let pushQueryTwo = PFInstallation.query()
-//                            pushQueryTwo?.whereKey("deviceOwner", equalTo: quoteToLike.poster)
-//                            let compoundPushQuery = PFQuery.orQueryWithSubqueries([pushQueryOne!, pushQueryTwo!])
-//                            let push = PFPush()
-//                            push.setQuery(compoundPushQuery) // Set our Installation query
-//                            let name = "\(self.theCurrentUser!.firstName) \(self.theCurrentUser!.lastName) applauds your saidThat"
-//                            push.setMessage(name)
-//                            push.sendPushInBackground()
-//                            println("push should be sent")
-//                            //println("quote was saved, was the countersaved?")
-//                        }
-//                }
-//
-//            }
-//        }
-        
     }
     
     func deleteLike(quoteToLike: Quote, forCell: QuoteCell)
@@ -620,14 +497,10 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
                 clap.deleteInBackgroundWithBlock({ (success, error) -> Void in
                     if success
                     {
-                        println("we deleted this like")
                         forCell.applaudButton.setTitle("Applaud", forState: .Normal)
                         let u = find(self.quotesIClap, clap.quoteClapped)
-                        println("the array is \(self.quotesIClap.count) and we are looking at \(u)")
                         self.quotesIClap.removeAtIndex(u!)
-                        println("three")
                         let i = find(self.myClaps, clap)
-                        println("the array is \(self.myClaps.count) and we are looking at \(i)")
                         self.myClaps.removeAtIndex(i!)
                         forCell.iClapped = false
                         let newNumber = quoteToLike.likesCounter.integerValue - 1
@@ -639,15 +512,12 @@ class QuotesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UI
                                 {
                                 
                                 }
-                        }
+                            }
                         
                     }
                 })
             }
         }
-        
-        
-        
         
     }
     
