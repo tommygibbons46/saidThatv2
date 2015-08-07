@@ -27,6 +27,9 @@ class Quote: PFObject, PFSubclassing
     @NSManaged var isFlagged : NSNumber
     @NSManaged var likesCounter : NSNumber
     @NSManaged var quoteIsRiding : NSNumber
+    @NSManaged var quoteIsClapped : NSNumber
+
+    
 
     
     

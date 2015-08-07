@@ -36,8 +36,9 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     var theCurrentUser: PassiveUser?
     var tableNumber: NSNumber?
     var quoteToDelete: Quote?
-    
-    
+    var myClaps : [Clap] = []
+    var quotesIClap: [Quote] = []
+
     
     @IBOutlet weak var followButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
@@ -69,7 +70,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     {
         if self.selectedUser == self.theCurrentUser
         {
-            println("looking at your own profile")
+            //println("looking at your own profile")
             self.profilePic.userInteractionEnabled = true
             self.followButton.hidden = true
             //add gesture recognizer
@@ -82,13 +83,13 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
         }
         if self.selectedUser?.profilePic == nil
         {
-            println("setting up profile bubble")
+            //println("setting up profile bubble")
             setUpProfilePicture(UIImage(named:"profileBubble")!)
             profilePic.contentMode = UIViewContentMode.Center
         }
         else
         {
-            println("setting up profile image")
+            //println("setting up profile image")
             profilePic.contentMode = UIViewContentMode.ScaleAspectFit
             self.selectedUser?.profilePic.getDataInBackgroundWithBlock({ (imageData, error) -> Void in
                 if error == nil
@@ -131,7 +132,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.quoteToDelete?.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
-                            println("we deleted this quote")
+                            //println("we deleted this quote")
                             self.quotes.removeAtIndex(indexPath.row)
                             self.tableView.reloadData()
                         }
@@ -143,7 +144,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.quoteToDelete?.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
-                            println("we deleted this quote")
+                            //println("we deleted this quote")
                             self.posts.removeAtIndex(indexPath.row)
                             self.tableView.reloadData()
                         }
@@ -169,7 +170,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.showRideAlert(quoteToMark)
                 }
                 self.quoteToDelete?.deleteInBackgroundWithBlock({ (success, error) -> Void in
-                    println("we deleted this quote")
+                    //println("we deleted this quote")
                 })
             
             })
@@ -195,7 +196,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 forQuote.saveInBackgroundWithBlock({ (success, error) -> Void in
                     if error == nil
                     {
-                        println("we have created a green quote")
+                        //println("we have created a green quote")
                         self.tableView.reloadData()
                     }
                 })
@@ -206,8 +207,8 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             forQuote.saveInBackgroundWithBlock({ (success, error) -> Void in
                 if error == nil
                 {
-                    println("we have created a green quote")
-                    println("jk no we didn't")
+                    //println("we have created a green quote")
+                    //println("jk no we didn't")
                 }
             })
         }))
@@ -230,13 +231,25 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     func setUpLabels()
     {
         let postsTap = UITapGestureRecognizer(target: self, action: "showPosts:")
+        let postsTap2 = UITapGestureRecognizer(target: self, action: "showPosts:")
+        self.postsCountLabel.userInteractionEnabled = true
         self.postsLabel.addGestureRecognizer(postsTap)
+        self.postsCountLabel.addGestureRecognizer(postsTap2)
         let quotesTap = UITapGestureRecognizer(target: self, action: "showQuotes:")
+        let quotesTap2 = UITapGestureRecognizer(target: self, action: "showQuotes:")
+        self.quotesCountLabel.userInteractionEnabled = true
         self.quotesLabel.addGestureRecognizer(quotesTap)
+        self.quotesCountLabel.addGestureRecognizer(quotesTap2)
         let followersTap = UITapGestureRecognizer(target: self, action: "showFollowers:")
+        let followersTap2 = UITapGestureRecognizer(target: self, action: "showFollowers:")
+        self.followersCountLabel.userInteractionEnabled = true
         self.followersLabel.addGestureRecognizer(followersTap)
+        self.followersCountLabel.addGestureRecognizer(followersTap2)
         let followingTap = UITapGestureRecognizer(target: self, action: "showFollowing:")
+        let followingTap2 = UITapGestureRecognizer(target: self, action: "showFollowing:")
+        self.followingCountLabel.userInteractionEnabled = true
         self.followingLabel.addGestureRecognizer(followingTap)
+        self.followingCountLabel.addGestureRecognizer(followingTap2)
     }
     
     
@@ -275,7 +288,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     (succeeded, error) -> Void in
                     if error == nil
                     {
-                        println("follow saved")
+                        //println("follow saved")
                         self.followButton.setTitle("Unfollow", forState: UIControlState.Normal)
                         let newNumber = self.followers.count + 1
                         self.followersCountLabel.text = String(newNumber)
@@ -295,6 +308,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     {
         let queryQuotes = Quote.query()
         queryQuotes!.whereKey("poster", equalTo: self.selectedUser!)
+        queryQuotes?.includeKey("saidBy")
 //        queryQuotes!.includeKey("upvotes")
         queryQuotes?.orderByDescending("likesCounter")
         queryQuotes!.findObjectsInBackgroundWithBlock(
@@ -310,6 +324,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     self.tableView.setNeedsLayout()
                     self.tableView.layoutIfNeeded()
                     self.tableView.reloadData()
+                    println(self.posts)
                 }
         })
 
@@ -325,6 +340,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             cell.clapImage2.alpha = 0.0
             let quoteToShow = self.quotes[indexPath.row]
             cell.qTextLabel2.text = "\"" + quoteToShow.quoteText + "\""
+            cell.qTextLabel2.font = cell.qTextLabel2.font.fontWithSize(14)
             cell.delegate = self
             cell.selectedQuote = quoteToShow
             let newNumber = quoteToShow.likesCounter.integerValue
@@ -353,6 +369,16 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 cell.qTextLabel2.textColor = UIColor.blackColor()
                 cell.applaudButton2.tintColor = UIColor(red: 162/255, green: 221/255, blue: 150/255, alpha: 1.0)
             }
+            if contains(self.quotesIClap, quoteToShow)
+            {
+                cell.iClapped2 = true
+                cell.applaudButton2.setTitle("Unapplaud", forState: UIControlState.Normal)
+            }
+            else
+            {
+                cell.iClapped2 = false
+                cell.applaudButton2.setTitle("Applaud", forState: UIControlState.Normal)
+            }
             return cell
         }
         else if tableNumber!.isEqualToNumber(2)
@@ -362,6 +388,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             let quoteToShow = self.posts[indexPath.row]
             cell.selectedQuote = quoteToShow
             cell.qTextLabel2.text = "\"" + quoteToShow.quoteText + "\""
+            cell.qTextLabel2.font = cell.qTextLabel2.font.fontWithSize(14)
             cell.delegate = self
             let newNumber = quoteToShow.likesCounter.integerValue
             let numberString = String(stringInterpolationSegment: newNumber)
@@ -391,6 +418,16 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             }
             self.tableView.rowHeight = UITableViewAutomaticDimension
             self.tableView.estimatedRowHeight = 100
+            if contains(self.quotesIClap, quoteToShow)
+            {
+                cell.iClapped2 = true
+                cell.applaudButton2.setTitle("Unapplaud", forState: UIControlState.Normal)
+            }
+            else
+            {
+                cell.iClapped2 = false
+                cell.applaudButton2.setTitle("Applaud", forState: UIControlState.Normal)
+            }
             return cell
         }
         else if tableNumber!.isEqualToNumber(3) //the selected users followers - he is to, they are from
@@ -437,6 +474,10 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             {
                 cell.followButton2.hidden = true
             }
+            else
+            {
+                cell.followButton2.hidden = false
+            }
             if contains(self.theCurrentUsersFollowsToUser, userForRow)
             {
                 cell.isFollowing2 = true
@@ -472,6 +513,10 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
             if cell.theCurrentUser == followeeObject.to
             {
                 cell.followButton2.hidden = true
+            }
+            else
+            {
+                cell.followButton2.hidden = false
             }
             let userForRow = followeeObject.to
             
@@ -619,12 +664,12 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 if let results = objects as? [Follow]
                 {
                     self.following = results
-                    println(self.following)
-                    println(self.following.count)
+                    //println(self.following)
+                    //println(self.following.count)
                     for follow in self.following
                     {
-                        println(follow.to)
-                        println(follow.to.firstName)
+                        //println(follow.to)
+                        //println(follow.to.firstName)
                     }
                     self.followingCountLabel.text = String(self.following.count)
                     self.tableView.setNeedsLayout()
@@ -731,18 +776,18 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 (success, error) -> Void in
                 if (success)
                 {
-                    println("saved img file to user")
+                    //println("saved img file to user")
                 }
                 else
                 {
-                    println("no saved")
+                    //println("no saved")
                 }
         }
     }
     
     func changePhoto(sender: UITapGestureRecognizer)
     {
-        println("have a tap")
+        //println("have a tap")
         self.showAlertOnViewController()
     }
 
@@ -770,7 +815,7 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
     }
     func theUserDoubleTapped(yes: Bool, forCell: QuoteCell, andQuote: Quote)
     {
-        println("double tap here")
+        //println("double tap here")
         UIView.animateWithDuration(0.5, animations: { () -> Void in
             forCell.clapImage2.alpha = 1.0
             }) { (finished) -> Void in
@@ -778,38 +823,126 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     forCell.clapImage2.alpha = 0.0
                     }, completion: nil)
         }
-        
-        self.createLike(andQuote, forCell: forCell)
+        if forCell.iClapped2 == false
+        {
+            self.createLike(andQuote, forCell: forCell)
+        }
+        else
+        {
+            self.deleteLike(andQuote, forCell: forCell)
+        }
+
     }
     
     
     func createLike(quoteToLike: Quote, forCell: QuoteCell)
     {
-        let newNumber = quoteToLike.likesCounter.integerValue + 1
-        forCell.likeButton2.setTitle(String(newNumber), forState: UIControlState.Normal)
-        let newUpvote = Upvote(className: "Upvote")
-        newUpvote.quote = quoteToLike
-        newUpvote.liker = self.theCurrentUser!
-        var upVoteACL = PFACL()
-        upVoteACL.setPublicWriteAccess(true)
-        upVoteACL.setPublicReadAccess(true)
-        newUpvote.ACL = upVoteACL
-        newUpvote.saveInBackgroundWithBlock { (success, error) -> Void in
-            if error == nil
+        let clap = Clap()
+        clap.clapper = self.theCurrentUser!
+        clap.quoteClapped = quoteToLike
+        clap.saveInBackgroundWithBlock { (success, error) -> Void in
+            if success
             {
-                let upVoteRelation = quoteToLike.relationForKey("upvotes")
-                upVoteRelation.addObject(newUpvote)
+                println("clap saved")
+                forCell.applaudButton2.setTitle("Unapplaud", forState: UIControlState.Normal)
+                self.myClaps.append(clap)
+                self.quotesIClap.append(clap.quoteClapped)
+                forCell.iClapped2 = true
+                let newNumber = quoteToLike.likesCounter.integerValue + 1
+                forCell.likeButton2.setTitle(String(newNumber), forState: UIControlState.Normal)
                 quoteToLike.incrementKey("likesCounter", byAmount: 1)
                 quoteToLike.saveInBackgroundWithBlock
                     { (success, error) -> Void in
                         if error == nil
                         {
-                            println("quote was saved, was the countersaved?")
+                            let pushQueryOne = PFInstallation.query()
+                            pushQueryOne!.whereKey("deviceOwner", equalTo: quoteToLike.saidBy)
+                            let pushQueryTwo = PFInstallation.query()
+                            pushQueryTwo?.whereKey("deviceOwner", equalTo: quoteToLike.poster)
+                            let compoundPushQuery = PFQuery.orQueryWithSubqueries([pushQueryOne!, pushQueryTwo!])
+                            let push = PFPush()
+                            push.setQuery(compoundPushQuery) // Set our Installation query
+                            let name = "\(self.theCurrentUser!.firstName) \(self.theCurrentUser!.lastName) applauds your saidThat"
+                            push.setMessage(name)
+                            push.sendPushInBackground()
+                            println("push should be sent")
+                            //println("quote was saved, was the countersaved?")
                         }
                 }
                 
+                
+                
+                
             }
         }
+    }
+    
+    
+    func deleteLike(quoteToLike: Quote, forCell: QuoteCell)
+    {
+        //we need to find the clap object associated with this quote and then delete it
+        
+        //iterate through our array of claps if our clap.quote = quoteToLike, delete that quote
+        
+        for clap in myClaps
+        {
+            if clap.quoteClapped == quoteToLike
+            {
+                
+                clap.deleteInBackgroundWithBlock({ (success, error) -> Void in
+                    if success
+                    {
+                        println("we deleted this like")
+                        forCell.applaudButton2.setTitle("Applaud", forState: .Normal)
+                        let u = find(self.quotesIClap, clap.quoteClapped)
+                        println("the array is \(self.quotesIClap.count) and we are looking at \(u)")
+                        self.quotesIClap.removeAtIndex(u!)
+                        println("three")
+                        let i = find(self.myClaps, clap)
+                        println("the array is \(self.myClaps.count) and we are looking at \(i)")
+                        self.myClaps.removeAtIndex(i!)
+                        forCell.iClapped2 = false
+                        let newNumber = quoteToLike.likesCounter.integerValue - 1
+                        forCell.likeButton2.setTitle(String(newNumber), forState: UIControlState.Normal)
+                        quoteToLike.incrementKey("likesCounter", byAmount: -1)
+                        quoteToLike.saveInBackgroundWithBlock
+                            { (success, error) -> Void in
+                                if error == nil
+                                {
+                                    
+                                }
+                        }
+                        
+                    }
+                })
+            }
+        }
+        
+        
+        
+        
+    }
+    
+
+    
+    func findMyClaps()
+    {
+        let myClaps = Clap.query()
+        myClaps?.whereKey("clapper", equalTo: self.theCurrentUser!)
+        myClaps?.findObjectsInBackgroundWithBlock({ (myClapQs, error) -> Void in
+            if error == nil
+            {
+                if let clapsArray = myClapQs as? [Clap]
+                {
+                    for clap in clapsArray
+                    {
+                        self.myClaps.append(clap)
+                        let clappedQuote = clap.quoteClapped
+                        self.quotesIClap.append(clappedQuote)
+                    }
+                }
+            }
+        })
         
     }
     
@@ -888,7 +1021,8 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                 (succeeded, error) -> Void in
                 if error == nil
                 {
-                    println("follow saved")
+                    //println("follow saved")
+                    self.sendPush()
                     self.theCurrentUsersFollowsTo.append(newFollow)
                     self.theCurrentUsersFollowsToUser.append(newFollow.to)//change these arrays
                     self.tableView.reloadData()
@@ -909,12 +1043,26 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
         }
     }
     
+    func sendPush()
+    {
+        let pusher = PFInstallation.query()
+        pusher!.whereKey("deviceOwner", equalTo: self.selectedUser!)
+        let push = PFPush()
+        push.setQuery(pusher) // Set our Installation query
+        let message = "\(self.theCurrentUser!.firstName) \(self.theCurrentUser!.lastName) is now following you"
+        push.setMessage(message)
+        push.sendPushInBackground()
+        println("push should be sent")
+    }
+    
+    
+    
     func deleteFollow(to: PassiveUser, from: PassiveUser)
     {
         
         if contains(self.theCurrentUsersFollowsToUser, to)
         {
-            println("yes we have this users follow person")
+            //println("yes we have this users follow person")
             //for every follow in usersFollows where the to matches this to here, delete
             for follow in self.theCurrentUsersFollowsTo
             {
@@ -924,11 +1072,11 @@ class ProfileVC: UIViewController, UITableViewDataSource, UITableViewDelegate,  
                     let i = find(self.theCurrentUsersFollowsTo, follow)
                     self.theCurrentUsersFollowsTo.removeAtIndex(i!)
                     let u = find(self.theCurrentUsersFollowsToUser, follow.to)
-                    self.theCurrentUsersFollowsToUser.removeAtIndex(i!)
+                    self.theCurrentUsersFollowsToUser.removeAtIndex(u!)
                     follow.deleteInBackgroundWithBlock({ (success, error) -> Void in
                         if error == nil
                         {
-                            println("we deleted this guy")
+                            //println("we deleted this guy")
                             if from == self.selectedUser //the current user is looking at his own profile and just unfollowed someone (presumably who was following him)
                             {
                                 //                              let int = self.followingCountLabel.text

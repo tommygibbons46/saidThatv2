@@ -16,6 +16,7 @@ protocol flagDelegate
     func theUserDoubleTapped(yes: Bool, forCell: QuoteCell, andQuote: Quote)
     
     func createLike(quoteToLike: Quote, forCell: QuoteCell)
+    func deleteLike(quoteToLike: Quote, forCell: QuoteCell)
     
     func sendToLikeVC(withQuote: Quote)
     
@@ -32,6 +33,7 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var posterButton: UIButton!
     
+    @IBOutlet weak var saidbyPicture: UIImageView!
     
     @IBOutlet weak var quoteDetails: UILabel!
     
@@ -47,6 +49,9 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     @IBOutlet weak var applaudButton: UIButton!
     @IBOutlet weak var applaudButton2: UIButton!
     @IBOutlet weak var flagButton2: UIButton!
+    var iClapped : Bool?
+    var iClapped2 : Bool?
+    
     var programImage : UIImageView!
     
     var alert : UIAlertController!
@@ -78,12 +83,36 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     
     @IBAction func applaudButton2Tap(sender: AnyObject)
     {
-        delegate?.createLike(selectedQuote!, forCell: self)
+        if iClapped2 == true
+        {
+            delegate?.deleteLike(selectedQuote!, forCell: self)
+            UIView.animateWithDuration(0.5, animations: { () -> Void in
+                self.clapImage2.alpha = 1.0
+                }) { (finished) -> Void in
+                    UIView.animateWithDuration(0.5, animations: { () -> Void in
+                        self.clapImage2.alpha = 0.0
+                        }, completion: nil)
+            }
+
+        }
+        else
+        {
+            delegate?.createLike(selectedQuote!, forCell: self)
+            UIView.animateWithDuration(0.5, animations: { () -> Void in
+                self.clapImage2.alpha = 1.0
+                }) { (finished) -> Void in
+                    UIView.animateWithDuration(0.5, animations: { () -> Void in
+                        self.clapImage2.alpha = 0.0
+                        }, completion: nil)
+            }
+        }
+        
     }
     
     @IBAction func flagButton2tap(sender: AnyObject)
     {
-        println("flag tapped")
+        //println("flag tapped")
+
         delegate?.theUserHitFlagButton(true, forCell: selectedQuote!)
     }
     @IBAction func authorButtonTap(sender: AnyObject)
@@ -93,6 +122,7 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     
     @IBAction func posterButton2Tap(sender: AnyObject)
     {
+        println("poster child 2")
         delegate?.sendToPoster(selectedQuote!)
     }
     
@@ -102,16 +132,45 @@ class QuoteCell: UITableViewCell, UIGestureRecognizerDelegate {
     }
     @IBAction func posterButtonTap(sender: AnyObject)
     {
+        println("poster child 1")
         delegate?.sendToPoster(selectedQuote!)
+    }
+    
+    
+    @IBAction func postaButtonTap(sender: UIButton)
+    {
+        println("hello my friend")
     }
 
     @IBAction func applauseTap(sender: AnyObject)
     {
-        delegate?.createLike(selectedQuote!, forCell: self)
+        if iClapped == true
+        {
+            UIView.animateWithDuration(0.5, animations: { () -> Void in
+                self.clapImage.alpha = 1.0
+                }) { (finished) -> Void in
+                    UIView.animateWithDuration(0.5, animations: { () -> Void in
+                        self.clapImage.alpha = 0.0
+                        }, completion: nil)
+            }
+            delegate?.deleteLike(selectedQuote!, forCell: self)
+        }
+        else
+        {
+            UIView.animateWithDuration(0.5, animations: { () -> Void in
+                self.clapImage.alpha = 1.0
+                }) { (finished) -> Void in
+                    UIView.animateWithDuration(0.5, animations: { () -> Void in
+                        self.clapImage.alpha = 0.0
+                        }, completion: nil)
+            }
+            delegate?.createLike(selectedQuote!, forCell: self)
+        }
+        
     }
     @IBAction func flagButtonTap(sender: AnyObject)
     {
-        println("flag tapped")
+        //println("flag tapped")
         delegate?.theUserHitFlagButton(true, forCell: selectedQuote!)
     }
     

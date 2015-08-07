@@ -134,7 +134,7 @@ class SignupVC: UIViewController, UITextFieldDelegate
                 {
                     if returnedObjects != nil
                     {
-                        println("congrats, you already exist, do you want to update your info?")
+                        //println("congrats, you already exist, do you want to update your info?")
                         self.updateAnExisting = true
                         if let object = returnedObjects as? PassiveUser
                         {
@@ -147,7 +147,7 @@ class SignupVC: UIViewController, UITextFieldDelegate
                                 { (success, error) -> Void in
                                 if error == nil
                                     {
-                                        println("successful save")
+                                        //println("successful save")
                                     }
                                 })
                         }
@@ -155,7 +155,7 @@ class SignupVC: UIViewController, UITextFieldDelegate
                 }
                 else
                 {
-                    println("nope this person doesn't exist, we'll have to create you")
+                    //println("nope this person doesn't exist, we'll have to create you")
                     self.sendVerificationCode()
                 }
             }
@@ -188,11 +188,11 @@ class SignupVC: UIViewController, UITextFieldDelegate
                 (success: Bool, error: NSError?) -> Void in
                 if success
                 {
-                    println("New Passive User has been saved.")
+                    //println("New Passive User has been saved.")
                     PFCloud.callFunctionInBackground("sendVerificationCode", withParameters: ["phoneNumber": self.formattedPhoneNumber!, "firstName": self.firstNameTextField.text, "password": self.passwordTextField.text.lowercaseString, "lastName": self.lastNameTextField.text]) { (results, error) -> Void in
                         if error == nil
                         {
-                            println("sent verification code")
+                            //println("sent verification code")
                         }
                     }
                 }
@@ -204,7 +204,7 @@ class SignupVC: UIViewController, UITextFieldDelegate
         PFCloud.callFunctionInBackground("verifyPhoneNumber", withParameters: ["phoneNumber":self.formattedPhoneNumber!, "phoneVerificationCode": code], block: { (success, error) -> Void in
             if error == nil
             {
-                println("verification code succeeded")
+                //println("verification code succeeded")
                 let defaults = NSUserDefaults.standardUserDefaults()
                 defaults.setObject(self.formattedPhoneNumber!, forKey: "phoneNumber")
                 defaults.setBool(true, forKey: "verified")
@@ -255,7 +255,7 @@ class SignupVC: UIViewController, UITextFieldDelegate
         PFCloud.callFunctionInBackground("sendAnotherVerificationCode", withParameters: ["phoneNumber": formattedPhoneNumber!]) { (results, error) -> Void in
             if error == nil
             {
-                println("sent verification code")
+                //println("sent verification code")
             }
         }
         

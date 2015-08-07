@@ -78,6 +78,8 @@ class LogInVC: UIViewController, UITextFieldDelegate
     {
         super.viewDidLoad()
         self.passwordTextField.secureTextEntry = true
+        println(self.phoneNumberTextField.frame)
+//        println(self.phoneNumberCloud.frame)
         numberToolbar.barStyle = UIBarStyle.Default
         numberToolbar.items=[
             UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.Bordered, target: self, action: "hoopla"),
@@ -104,60 +106,61 @@ class LogInVC: UIViewController, UITextFieldDelegate
         logInQuery!.whereKey("phoneNumber", equalTo: formattedPhoneNumber!)
         logInQuery?.whereKey("password", equalTo: self.passwordTextField.text.lowercaseString)
         logInQuery?.whereKey("verified", equalTo: 1)
-        logInQuery!.findObjectsInBackgroundWithBlock
+        //what's the difference between find obeject and getObjects?
+        logInQuery?.getFirstObjectInBackgroundWithBlock {
+            (returnedObject, returnedError) -> Void in
+            if returnedError == nil
             {
-                (returnedObjects, returnedError) -> Void in
-                if returnedError == nil
+                //println("we found: \(returnedObjects)")
+                if let user = returnedObject as? PassiveUser
                 {
-                    println("we found: \(returnedObjects)")
-                    if let usersArray = returnedObjects as? [PassiveUser]
-                    {
-                        for foundUser in usersArray
-                        {
-                            self.theCurrentUser = foundUser
-                            let nextVC = QuotesVC(nibName: "QuotesVC", bundle: nil)
-                            nextVC.theCurrentUser = foundUser
-                            let defaults = NSUserDefaults.standardUserDefaults()
-                            defaults.setObject(self.theCurrentUser?.phoneNumber, forKey: "phoneNumber")
-                            defaults.setBool(true, forKey: "verified")
-                            self.dismissViewControllerAnimated(true, completion: nil)
-                            
-                        }
-                    }
-                    else
-                    {
-                        println("won't let us in!")
-//                        but let's try to break through anyway
+//                    for foundUser in usersArray
+//                    {
+                        self.theCurrentUser = user
+                        let nextVC = QuotesVC(nibName: "QuotesVC", bundle: nil)
+                        nextVC.theCurrentUser = user
+                        let defaults = NSUserDefaults.standardUserDefaults()
+                        defaults.setObject(self.theCurrentUser?.phoneNumber, forKey: "phoneNumber")
+                        defaults.setBool(true, forKey: "verified")
+                        self.dismissViewControllerAnimated(true, completion: nil)
                         
-                    }
-                    if returnedObjects?.count > 0
-                    {
-                        println("we found: \(returnedObjects)")
-                    }
-                    else
-                    {
-                        println("there was an error: \(returnedError)")
-                        let newQuery = PassiveUser.query()
-                        newQuery?.whereKey("phoneNumber", equalTo: self.formattedPhoneNumber!)
-                        newQuery?.findObjectsInBackgroundWithBlock({ (results, error) -> Void in
-                            if returnedError == nil
-                            {
-                                if results!.count > 0
-                                {
-                                    println(self.formattedPhoneNumber)
-                                    self.showAlert("...we recognize that number though...if you forgot your password, you can reset it by signing up again with the same phone number")
-                                    self.passwordTextField.text = ""
-                                }
-                                else
-                                {
-                                    self.showAlert("We don't know anyone with that phone number, are you sure you signed up?")
-                                    self.phoneNumberTextField.text = ""
-                                    self.passwordTextField.text = ""
-                                }
-                            }
-                        })
-                    }
+//                    }
                 }
+                else
+                {
+                    let defaults = NSUserDefaults.standardUserDefaults()
+                    defaults.setObject(self.formattedPhoneNumber, forKey: "phoneNumber")
+                    defaults.setBool(true, forKey: "verified")
+                    self.dismissViewControllerAnimated(true, completion: nil)
+                    //                        but let's try to break through anyway
+                    
+                }
+                if returnedObject != nil
+                {
+                }
+                else
+                {
+                    let newQuery = PassiveUser.query()
+                    newQuery?.whereKey("phoneNumber", equalTo: self.formattedPhoneNumber!)
+                    newQuery?.findObjectsInBackgroundWithBlock({ (results, error) -> Void in
+                        if returnedError == nil
+                        {
+                            if results!.count > 0
+                            {
+                                //println(self.formattedPhoneNumber)
+                                self.showAlert("...we recognize that number though...if you forgot your password, you can reset it by signing up again with the same phone number")
+                                self.passwordTextField.text = ""
+                            }
+                            else
+                            {
+                                self.showAlert("We don't know anyone with that phone number, are you sure you signed up?")
+                                self.phoneNumberTextField.text = ""
+                                self.passwordTextField.text = ""
+                            }
+                        }
+                    })
+                }
+            }
         }
         
     }
