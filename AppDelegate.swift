@@ -74,7 +74,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let settings = UIUserNotificationSettings(forTypes: UIUserNotificationType.Badge | UIUserNotificationType.Alert | UIUserNotificationType.Sound, categories: nil)
         UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-        println("should be here")
         UIApplication.sharedApplication().registerForRemoteNotifications()
 
         if application.respondsToSelector("registerUserNotificationSettings:") {
@@ -86,8 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let types = UIRemoteNotificationType.Badge | UIRemoteNotificationType.Alert | UIRemoteNotificationType.Sound
             application.registerForRemoteNotificationTypes(types)
         }
-//        UIApplication.sharedApplication().applicationIconBadgeNumber = 0
-//        UIApplication.sharedApplication().cancelAllLocalNotifications()
         return true
     }
     
@@ -102,7 +99,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let defaults = NSUserDefaults.standardUserDefaults()
         let verified: AnyObject? =  defaults.objectForKey("verified")
         let phoneNumber = defaults.objectForKey("phoneNumber")
-        
         
         let logInQuery = PassiveUser.query()
         if phoneNumber != nil
